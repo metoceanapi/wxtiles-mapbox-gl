@@ -1,0 +1,29 @@
+{
+  "name": "wxtiles-mapbox-gl",
+  "version": "1.0.0",
+  "description": "",
+  "main": "watch-public.js",
+  "scripts": {
+    "build": "rm -rf dist/ && node build.js && tsc",
+    "start": "DISABLE_HOT_RELOAD=true node watch-public.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/metoceanapi/wxtiles-mapbox-gl.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/metoceanapi/wxtiles-mapbox-gl/issues"
+  },
+  "homepage": "https://github.com/metoceanapi/wxtiles-mapbox-gl#readme",
+  "devDependencies": {
+    "esbuild": "^0.12.15",
+    "express": "^4.17.1",
+    "typescript": "^4.3.5"
+  },
+  "dependencies": {
+    "deck.gl": "^8.4.20"
+  }
+}
