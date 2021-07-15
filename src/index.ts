@@ -1,5 +1,6 @@
 import { createWxTilesLayerProps, setupWxTilesLib, WxTilesLayer } from '@metservice/wxtiledeckgl';
-import { ScatterplotLayer, ArcLayer } from '@deck.gl/layers';
+import { ScatterplotLayer, BitmapLayer } from '@deck.gl/layers';
+import { TileLayer } from '@deck.gl/geo-layers';
 import { MapboxLayer } from '@deck.gl/mapbox';
 import mapboxgl from 'mapbox-gl';
 mapboxgl.accessToken = 'pk.eyJ1IjoibWV0b2NlYW4iLCJhIjoia1hXZjVfSSJ9.rQPq6XLE0VhVPtcD9Cfw6A';
@@ -15,20 +16,43 @@ export const start = async () => {
 	setupWxTilesLib();
 
 	map.on('load', async () => {
-		const params =
-			//
-			// ['ecwmf.global', 'air.temperature.at-2m', 'temper2m'];
-			// ['ecwmf.global', 'air.temperature.at-2m', 'Sea Surface Temperature'];
-			// ['ecwmf.global', 'air.humidity.at-2m', 'base'];
-			// ['ww3-ecmwf.global', 'wave.height', 'Significant wave height'];
-			// ['ww3-ecmwf.global', 'wave.direction.above-8s.peak', 'direction'];
-			// ['obs-radar.rain.nzl.national', 'reflectivity', 'rain.EWIS'];
-			['ecwmf.global', ['wind.speed.eastward.at-10m', 'wind.speed.northward.at-10m'] as [string, string], 'Wind Speed2'];
-		const wxProps = await createWxTilesLayerProps('https://tiles.metoceanapi.com/data/', params as any);
+		// const params =
+		// 	//
+		// 	// ['ecwmf.global', 'air.temperature.at-2m', 'temper2m'];
+		// 	// ['ecwmf.global', 'air.temperature.at-2m', 'Sea Surface Temperature'];
+		// 	// ['ecwmf.global', 'air.humidity.at-2m', 'base'];
+		// 	// ['ww3-ecmwf.global', 'wave.height', 'Significant wave height'];
+		// 	// ['ww3-ecmwf.global', 'wave.direction.above-8s.peak', 'direction'];
+		// 	// ['obs-radar.rain.nzl.national', 'reflectivity', 'rain.EWIS'];
+		// 	['ecwmf.global', ['wind.speed.eastward.at-10m', 'wind.speed.northward.at-10m'] as [string, string], 'Wind Speed2'];
+		// const wxProps = await createWxTilesLayerProps('https://tiles.metoceanapi.com/data/', params as any);
+		// map.addLayer(
+		// 	new MapboxLayer({
+		// 		type: WxTilesLayer,
+		// 		...wxProps,
+		// 	})
+		// );
+
 		map.addLayer(
 			new MapboxLayer({
-				type: WxTilesLayer,
-				...wxProps,
+				id: 'testTileLayer',
+				type: TileLayer,
+				minZoom: 0,
+				maxZoom: 19,
+				tileSize: 256,
+				data: 'https://c.tile.openstreetmap.org/{z}/{x}/{y}.png',
+
+				renderSubLayers: (props) => {
+					const {
+						bbox: { west, south, east, north },
+					} = props.tile;
+
+					return new BitmapLayer(props, {
+						data: null,
+						image: props.data,
+						bounds: [west, south, east, north],
+					});
+				},
 			})
 		);
 
