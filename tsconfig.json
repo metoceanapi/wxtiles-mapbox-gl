@@ -1,0 +1,21 @@
+{
+	"include": ["src"],
+	"compilerOptions": {
+		"outDir": "dist/es",
+		"allowSyntheticDefaultImports": true,
+		"moduleResolution": "node",
+		"declaration": true,
+		"noImplicitThis": true,
+		"emitDeclarationOnly": true,
+		"noImplicitReturns": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictPropertyInitialization": true,
+		"lib": ["es2017", "dom", "esnext.asynciterable"],
+		"allowJs": true,
+		"sourceMap": true,
+		"resolveJsonModule": true,
+		"skipLibCheck": true,
+		"esModuleInterop": true,
+	}
+}
