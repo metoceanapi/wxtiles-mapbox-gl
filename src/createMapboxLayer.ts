@@ -79,39 +79,48 @@ export class WxTilesLayerManager {
 		const layerId = this.props.id + index;
 		const URI = this.props.wxprops.URITime.replace('{time}', this.props.wxprops.meta.times[index]);
 
-		const promise = new Promise<number>((resolve): void => {
-			WXLOG('promise:', index, 'started');
-			const newInvisibleLayer = new WxTilesLayer({
-				...this.props,
-				id: layerId,
-				data: URI,
-
-				visible: false,
-
-				onViewportLoad: (): void => {
-					WXLOG('promise:onViewportLoad:', index);
-					// const newVisibleLayer = new WxTilesLayer({ ...this.props, id: layerId, data: URI });
-					// this._setFilteredLayers({ remove: newInvisibleLayer, replace: this.layer, add: newVisibleLayer });
-					// this.layer = newVisibleLayer;
-					this.currentIndex = index;
-					this.cancelNewLayerPromise = undefined;
-					resolve(this.currentIndex);
-				},
-			});
-
-			this.cancelNewLayerPromise = () => {
-				WXLOG('promise:cancelNewLayerPromise:', index);
-				this.cancelNewLayerPromise = undefined;
-				resolve(this.currentIndex);
-			};
-
-			// this._setFilteredLayers({ add: newInvisibleLayer });
-			WXLOG('promise:', index, 'finished');
+		const layer = new MapboxLayer({
+			type: WxTilesLayer,
+			...this.props,
+			id: layerId,
+			data: URI,
+			// onViewportLoad: resolve,
 		});
+		this.map.addLayer(layer, this.beforeLayerId);
 
-		WXLOG('newLayerByTimeIndexPromise:', index, 'finished');
+		// const promise = new Promise<number>((resolve): void => {
+		// 	WXLOG('promise:', index, 'started');
+		// 	const newInvisibleLayer = new WxTilesLayer({
+		// 		...this.props,
+		// 		id: layerId,
+		// 		data: URI,
 
-		return promise;
+		// 		visible: false,
+
+		// 		onViewportLoad: (): void => {
+		// 			WXLOG('promise:onViewportLoad:', index);
+		// 			// const newVisibleLayer = new WxTilesLayer({ ...this.props, id: layerId, data: URI });
+		// 			// this._setFilteredLayers({ remove: newInvisibleLayer, replace: this.layer, add: newVisibleLayer });
+		// 			// this.layer = newVisibleLayer;
+		// 			this.currentIndex = index;
+		// 			this.cancelNewLayerPromise = undefined;
+		// 			resolve(this.currentIndex);
+		// 		},
+		// 	});
+
+		// 	this.cancelNewLayerPromise = () => {
+		// 		WXLOG('promise:cancelNewLayerPromise:', index);
+		// 		this.cancelNewLayerPromise = undefined;
+		// 		resolve(this.currentIndex);
+		// 	};
+
+		// 	// this._setFilteredLayers({ add: newInvisibleLayer });
+		// 	WXLOG('promise:', index, 'finished');
+		// });
+
+		// WXLOG('newLayerByTimeIndexPromise:', index, 'finished');
+
+		return Promise.resolve(index);
 	}
 
 	protected _checkIndex(index: number): number {

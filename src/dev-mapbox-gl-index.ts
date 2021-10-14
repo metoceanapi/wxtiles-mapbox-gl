@@ -1,7 +1,23 @@
+// CSS
+import 'mapbox-gl/dist/mapbox-gl.css';
+import '@metoceanapi/wxtiles-deckgl/dist/es/wxtilesdeckgl.css';
+// MAPBOX
 import mapboxgl from 'mapbox-gl';
 import { Map } from 'mapbox-gl';
-
-import { setupWxTilesLib, createWxTilesLayerProps, WxServerVarsStyleType, createMapboxLayer, WxTilesLayerManager } from './createMapboxLayer';
+// WXTILES
+import {
+	setupWxTilesLib,
+	createWxTilesLayerProps,
+	WxServerVarsStyleType,
+	createMapboxLayer,
+	WxTilesLayerManager,
+	setWxTilesLogging,
+	LibSetupObject,
+} from './createMapboxLayer';
+// JSON custom Wxtiles setting
+import colorStyles from './styles/styles.json';
+import units from './styles/uconv.json';
+import colorSchemes from './styles/colorschemes.json';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWV0b2NlYW4iLCJhIjoia1hXZjVfSSJ9.rQPq6XLE0VhVPtcD9Cfw6A';
 
@@ -12,8 +28,6 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWV0b2NlYW4iLCJhIjoia1hXZjVfSSJ9.rQPq6XLE0VhV
 		center: [175, -40],
 		zoom: 7,
 	});
-
-	await setupWxTilesLib();
 
 	map.on('load', async () => {
 		// Classic mapbox layers
@@ -81,29 +95,43 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWV0b2NlYW4iLCJhIjoia1hXZjVfSSJ9.rQPq6XLE0VhV
 			},
 		});
 
-		const params: WxServerVarsStyleType = ['obs-radar.rain.nzl.national', 'reflectivity', 'rain.EWIS'];
-		// ['ecwmf.global', ['wind.speed.eastward.at-10m', 'wind.speed.northward.at-10m'], 'Wind Speed2'];
-		// ['ecwmf.global', 'air.temperature.at-2m', 'Sea Surface Temperature'];
-		const extraParams = {
-			// DeckGl layer's common parameters
-			opacity: 0.5,
-			// event hook
-			onClick(info: any, pickingEvent: any): void {
-				console.log(info?.layer?.onClickProcessor?.(info, pickingEvent) || info);
-			},
-		};
-
-		const wxProps = await createWxTilesLayerProps({ server: 'https://tiles.metoceanapi.com/data/', params, extraParams });
-
-		const layerManager = createMapboxLayer(map, wxProps);
-		// or
-		// const layerManager = new WxTilesLayerManager({ deckgl, props: wxProps });
-
-		await layerManager.renderCurrentTimestep();
-
-		UIhooks(layerManager);
+		addWxTilesLayer(map);
 	});
 })();
+
+async function addWxTilesLayer(map: Map) {
+	setWxTilesLogging(true); // logging on
+	// ESSENTIAL step to get lib ready.
+	const wxlibCustomSettings: LibSetupObject = {
+		colorStyles: colorStyles as any,
+		units: units as any,
+		colorSchemes,
+	};
+	await setupWxTilesLib(wxlibCustomSettings); // !!! IMPORTANT: await to make sure fonts (barbs, arrows, etc) are loaded
+
+	const params: WxServerVarsStyleType =
+		// ['ecwmf.global', ['wind.speed.eastward.at-10m', 'wind.speed.northward.at-10m'], 'Wind Speed2'];
+		// ['ecwmf.global', 'air.temperature.at-2m', 'Sea Surface Temperature'];
+		['obs-radar.rain.nzl.national', 'reflectivity', 'rain.EWIS'];
+	const extraParams = {
+		// DeckGl layer's common parameters
+		opacity: 0.5,
+		// event hook
+		onClick(info: any, pickingEvent: any): void {
+			console.log(info?.layer?.onClickProcessor?.(info, pickingEvent) || info);
+		},
+	};
+
+	const wxProps = await createWxTilesLayerProps({ server: 'https://tiles.metoceanapi.com/data/', params, extraParams });
+
+	const layerManager = createMapboxLayer(map, wxProps);
+	// or
+	// const layerManager = new WxTilesLayerManager({ deckgl, props: wxProps });
+
+	await layerManager.renderCurrentTimestep();
+
+	UIhooks(layerManager);
+}
 
 function UIhooks(layerManager: WxTilesLayerManager) {
 	// set up user interface
