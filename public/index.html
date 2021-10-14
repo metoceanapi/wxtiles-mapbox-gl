@@ -1,36 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>WxTiles Leaflet Demo</title>
-		<meta charset="utf-8" />
+		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Custom Raster Source Layer</title>
 		<link rel="shortcut icon" href="res/icon.png" type="image/x-icon" />
+
+		<!-- deck.gl standalone bundle -->
+		<!-- <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script> -->
+		<link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet" />
+		<link rel="stylesheet" href="./wxtiles-gl/wxtiles-mapbox-gl.css" />
+
 		<style type="text/css">
-			html,
 			body {
-				height: 100%;
+				background: #444;
 				margin: 0;
+				padding: 0;
 			}
 		</style>
-		<!-- LEAFLET lib goes first -->
-		<link
-			rel="stylesheet"
-			href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-			integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-			crossorigin=""
-		/>
-		<script
-			src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-			integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-			crossorigin=""
-		></script>
-
-		<!-- script -->
-		<link rel="stylesheet" href="script/script.css" />
-		<script defer src="script/script.js"></script>
 	</head>
 
 	<body class="fill-window">
-		<div id="map" style="height: 100%"></div>
+		<div id="map" style="height: 100vh"></div>
+		<div style="position: absolute; z-index: 10; top: 10px">
+			<button id="prev">Prev</button>
+			<button id="next">Next</button>
+			<button id="play">Play</button>
+			<button id="remove">Remove</button>
+		</div>
+		<!-- wxtile js -->
+		<script src="./wxtiles-gl/wxtiles-mapbox-gl.js"></script>
 	</body>
 </html>

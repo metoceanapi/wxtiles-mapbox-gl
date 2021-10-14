@@ -6,14 +6,19 @@ const express = require('express');
 
 esbuild
 	.build({
-		entryPoints: ['src/index.ts'],
+		entryPoints: ['src/wxtiles-mapbox-gl.ts'],
 		bundle: true,
 		plugins: [],
-		loader: {},
-		target: 'es6',
+		loader: {
+			'.ttf': 'base64',
+			'.woff': 'base64',
+			'.fs': 'text',
+			'.vs': 'text',
+		},
+		// target: 'es6',
 		format: 'iife',
-		outfile: 'public/script/script.js',
-		globalName: 'script',
+		outdir: 'public/wxtiles-gl',
+		globalName: 'wxtilesGl',
 		sourcemap: true,
 		// minify: false,
 		watch: {
