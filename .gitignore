@@ -61,5 +61,5 @@ typings/
 
 # Dist file
 /dist
-
-/public/script
+public/wxtiles
+package-lock.json

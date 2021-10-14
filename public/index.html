@@ -3,16 +3,24 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
-		<title>Custom Raster Source Layer</title>
+		<title>Wxtiles DeckGL demo</title>
 		<link rel="shortcut icon" href="res/icon.png" type="image/x-icon" />
 
 		<!-- deck.gl standalone bundle -->
-		<!-- <script src="https://unpkg.com/deck.gl@latest/dist.min.js"></script> -->
-		<link href="https://api.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css" rel="stylesheet" />
-		<link rel="stylesheet" href="./wxtiles-gl/wxtiles-mapbox-gl.css" />
+		<!-- <script src="https://unpkg.com/deck.gl@8.6.0/dist.min.js"></script> -->
+
+		<!-- wxtiles js -->
+		<link rel="stylesheet" href="./wxtiles/wxtiles.css" />
+		<script defer src="./wxtiles/wxtiles.js"></script>
 
 		<style type="text/css">
+			.fill-window {
+				height: 100%;
+				position: absolute;
+				left: 0;
+				width: 100%;
+				overflow: hidden;
+			}
 			body {
 				background: #444;
 				margin: 0;
@@ -29,7 +37,5 @@
 			<button id="play">Play</button>
 			<button id="remove">Remove</button>
 		</div>
-		<!-- wxtile js -->
-		<script src="./wxtiles-gl/wxtiles-mapbox-gl.js"></script>
 	</body>
 </html>

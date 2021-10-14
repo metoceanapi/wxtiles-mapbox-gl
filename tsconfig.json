@@ -1,5 +1,6 @@
 {
 	"include": ["src"],
+	"exclude": ["src_example"],
 	"compilerOptions": {
 		"outDir": "dist/es",
 		"allowSyntheticDefaultImports": true,
