@@ -1,35 +1,18 @@
-export {
-	setupWxTilesLib,
-	setWxTilesLogging,
-	createWxTilesLayerProps,
-	LibSetupObject,
-	WxTilesLayerProps,
-	CreateProps,
-	WxServerVarsStyleType,
-	WxTilesLayer,
-	WXLOG,
-} from '@metoceanapi/wxtiles-deckgl';
-
 import { MapboxLayer } from '@deck.gl/mapbox';
 import { Map } from 'mapbox-gl';
-import {
-	setupWxTilesLib,
-	setWxTilesLogging,
-	createWxTilesLayerProps,
-	LibSetupObject,
-	WxTilesLayerProps,
-	CreateProps,
-	WxServerVarsStyleType,
-	WxTilesLayer,
-	WXLOG,
-} from '@metoceanapi/wxtiles-deckgl';
+import { WxTilesLayerProps, WxTilesLayer, WXLOG } from '@metoceanapi/wxtiles-deckgl';
+import '@metoceanapi/wxtiles-deckgl/dist/es/wxtilesdeckgl.css'; // CSS
+
+export { WxTilesLayerProps, WxTilesLayer, WXLOG }; // from '@metoceanapi/wxtiles-deckgl';
+export { setupWxTilesLib, setWxTilesLogging, createWxTilesLayerProps, LibSetupObject, CreateProps, WxServerVarsStyleType } from '@metoceanapi/wxtiles-deckgl';
 
 export class WxTilesLayerManager {
 	props: WxTilesLayerProps;
 	map: Map;
 	currentIndex: number = 0;
-	layerId?: string;
+	layerId: string = '';
 	beforeLayerId?: string = undefined;
+	layer?: MapboxLayer<string>;
 
 	protected cancelNewLayerPromise?: () => void;
 
@@ -60,8 +43,8 @@ export class WxTilesLayerManager {
 	remove(): void {
 		WXLOG('remove');
 		this.cancel();
-		this.layerId && this.map.removeLayer(this.layerId);
-		this.layerId = undefined;
+		this.layer && this.map.removeLayer(this.layerId);
+		this.layer = undefined;
 	}
 
 	renderCurrentTimestep(): Promise<number> {
@@ -76,17 +59,27 @@ export class WxTilesLayerManager {
 		index = this._checkIndex(index);
 		// if (this.layer && index === this.currentIndex) return Promise.resolve(this.currentIndex); // wait first then check index!!!
 
-		const layerId = this.props.id + index;
+		this.layerId = this.props.id; // + index;
 		const URI = this.props.wxprops.URITime.replace('{time}', this.props.wxprops.meta.times[index]);
 
-		const layer = new MapboxLayer({
-			type: WxTilesLayer,
+		const props = {
+			type: WxTilesLayer as any, // is complains on 'wxprops' // TODO: check
 			...this.props,
-			id: layerId,
+			//id: this.layerId,
 			data: URI,
 			// onViewportLoad: resolve,
-		});
-		this.map.addLayer(layer, this.beforeLayerId);
+		};
+
+		const layers = this.map.getStyle().layers;
+
+		if (!this.layer) {
+			this.layer = new MapboxLayer(props);
+			this.map.addLayer(this.layer, this.beforeLayerId);
+		} else {
+			this.layer.setProps(props);
+		}
+
+		const layers1 = this.map.getStyle().layers;
 
 		// const promise = new Promise<number>((resolve): void => {
 		// 	WXLOG('promise:', index, 'started');

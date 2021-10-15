@@ -1,6 +1,6 @@
 {
 	"include": ["src"],
-	"exclude": ["src_example"],
+	"exclude": ["src_example", "src/wxtilescss.ts"],
 	"compilerOptions": {
 		"outDir": "dist/es",
 		"allowSyntheticDefaultImports": true,

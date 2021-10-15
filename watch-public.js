@@ -3,7 +3,7 @@ const express = require('express');
 
 esbuild
 	.build({
-		entryPoints: ['src/dev-mapbox-gl-index.ts'],
+		entryPoints: ['src_example/dev-mapbox-gl-index.ts'],
 		bundle: true,
 		plugins: [],
 		loader: { '.woff': 'base64', '.fs': 'text', '.vs': 'text' },

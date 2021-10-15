@@ -1,19 +1,17 @@
-// CSS
-import 'mapbox-gl/dist/mapbox-gl.css';
-import '@metoceanapi/wxtiles-deckgl/dist/es/wxtilesdeckgl.css';
 // MAPBOX
+import 'mapbox-gl/dist/mapbox-gl.css'; // CSS
 import mapboxgl from 'mapbox-gl';
-import { Map } from 'mapbox-gl';
 // WXTILES
+import '@metoceanapi/wxtiles-deckgl/dist/es/wxtilesdeckgl.css'; // CSS
 import {
 	setupWxTilesLib,
 	createWxTilesLayerProps,
 	WxServerVarsStyleType,
 	createMapboxLayer,
-	WxTilesLayerManager,
 	setWxTilesLogging,
 	LibSetupObject,
-} from './createMapboxLayer';
+	WxTilesLayerManager,
+} from '@metoceanapi/wxtiles-mapbox-gl';
 // JSON custom Wxtiles setting
 import colorStyles from './styles/styles.json';
 import units from './styles/uconv.json';
@@ -22,7 +20,7 @@ import colorSchemes from './styles/colorschemes.json';
 mapboxgl.accessToken = 'pk.eyJ1IjoibWV0b2NlYW4iLCJhIjoia1hXZjVfSSJ9.rQPq6XLE0VhVPtcD9Cfw6A';
 
 (async () => {
-	const map = new Map({
+	const map = new mapboxgl.Map({
 		container: 'map',
 		style: 'mapbox://styles/mapbox/streets-v9',
 		center: [175, -40],
@@ -99,7 +97,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoibWV0b2NlYW4iLCJhIjoia1hXZjVfSSJ9.rQPq6XLE0VhV
 	});
 })();
 
-async function addWxTilesLayer(map: Map) {
+async function addWxTilesLayer(map: mapboxgl.Map) {
 	setWxTilesLogging(true); // logging on
 	// ESSENTIAL step to get lib ready.
 	const wxlibCustomSettings: LibSetupObject = {
@@ -111,10 +109,10 @@ async function addWxTilesLayer(map: Map) {
 
 	const params: WxServerVarsStyleType =
 		// ['ecwmf.global', ['wind.speed.eastward.at-10m', 'wind.speed.northward.at-10m'], 'Wind Speed2'];
-		// ['ecwmf.global', 'air.temperature.at-2m', 'Sea Surface Temperature'];
-		['obs-radar.rain.nzl.national', 'reflectivity', 'rain.EWIS'];
+		['ecwmf.global', 'air.temperature.at-2m', 'Sea Surface Temperature'];
+	// ['obs-radar.rain.nzl.national', 'reflectivity', 'rain.EWIS'];
 	const extraParams = {
-		// DeckGl layer's common parameters
+		// DeckGl layer's common parameters or hooks
 		opacity: 0.5,
 		// event hook
 		onClick(info: any, pickingEvent: any): void {
@@ -126,9 +124,9 @@ async function addWxTilesLayer(map: Map) {
 
 	const layerManager = createMapboxLayer(map, wxProps);
 	// or
-	// const layerManager = new WxTilesLayerManager({ deckgl, props: wxProps });
+	// const layerManager = new WxTilesLayerManager({ map, props: wxProps,beforeLayerId });
 
-	await layerManager.renderCurrentTimestep();
+	await layerManager.nextTimestep();
 
 	UIhooks(layerManager);
 }
