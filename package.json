@@ -1,6 +1,6 @@
 {
 	"name": "@metoceanapi/wxtiles-mapbox-gl",
-	"version": "0.0.2",
+	"version": "0.0.3",
 	"description": "WxTiles Mapbox-gl lib to render binary data tiles",
 	"main": "dist/es/wxtilesmapboxgl.js",
 	"types": "dist/es/wxtilesmapboxgl.d.ts",
