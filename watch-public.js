@@ -4,6 +4,8 @@ const express = require('express');
 esbuild
 	.build({
 		entryPoints: ['src_example/dev-mapbox-gl-index.ts'],
+		// entryPoints: ['src_example/dev-deckgl-index.ts'],
+
 		bundle: true,
 		plugins: [],
 		loader: { '.woff': 'base64', '.fs': 'text', '.vs': 'text' },

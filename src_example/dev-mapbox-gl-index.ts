@@ -2,7 +2,6 @@
 import 'mapbox-gl/dist/mapbox-gl.css'; // CSS
 import mapboxgl from 'mapbox-gl';
 // WXTILES
-import '@metoceanapi/wxtiles-deckgl/dist/es/wxtilesdeckgl.css'; // CSS
 import {
 	setupWxTilesLib,
 	createWxTilesLayerProps,
@@ -11,7 +10,8 @@ import {
 	setWxTilesLogging,
 	LibSetupObject,
 	WxTilesLayerManager,
-} from '@metoceanapi/wxtiles-mapbox-gl';
+} from '../src/wxtilesmapboxgl';
+import '../wxtilescss.css'; // CSS
 // JSON custom Wxtiles setting
 import colorStyles from './styles/styles.json';
 import units from './styles/uconv.json';
@@ -126,7 +126,7 @@ async function addWxTilesLayer(map: mapboxgl.Map) {
 	// or
 	// const layerManager = new WxTilesLayerManager({ map, props: wxProps,beforeLayerId });
 
-	await layerManager.nextTimestep();
+	await layerManager.renderCurrentTimestep();
 
 	UIhooks(layerManager);
 }

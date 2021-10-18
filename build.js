@@ -4,8 +4,8 @@ const sharedConfig = {
 	entryPoints: ['src/wxtilesmapboxgl.ts'],
 	// outfile: 'dist/es/wxtilesdeckgl.js',
 	bundle: true,
-	// sourcemap: false,
-	// minify: true,
+	sourcemap: false,
+	minify: true,
 	// splitting: true,
 	treeShaking: true,
 	// https://www.stetic.com/market-share/browser/

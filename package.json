@@ -1,11 +1,12 @@
 {
 	"name": "@metoceanapi/wxtiles-mapbox-gl",
-	"version": "0.0.1",
+	"version": "0.0.0",
 	"description": "WxTiles Mapbox-gl lib to render binary data tiles",
 	"main": "dist/es/wxtilesmapboxgl.js",
 	"types": "dist/es/wxtilesmapboxgl.d.ts",
 	"files": [
-		"dist/"
+		"dist/",
+		"wxtilescss.css"
 	],
 	"scripts": {
 		"build": "rm -rf dist/ && node build.js && tsc --declaration",
@@ -30,15 +31,13 @@
 	"devDependencies": {
 		"changelogkeeper": "^1.2.0",
 		"esbuild": "^0.12.28",
-		"esbuild-plugin-external-global": "^1.0.1",
 		"express": "^4.17.1",
-		"typescript": "^4.4.3",
-		"mapbox-gl": "^2.5.1",
-		"@metoceanapi/wxtiles-mapbox-gl": "file:../wxtiles-mapbox-gl",
-		"@types/mapbox-gl": "^2.4.2"
+		"typescript": "^4.4.3"
 	},
 	"dependencies": {
 		"@deck.gl/mapbox": "^8.6.0",
-		"@metoceanapi/wxtiles-deckgl": "^2.0.3"
+		"@metoceanapi/wxtiles-deckgl": "^2.0.5",
+		"@types/mapbox-gl": "^2.4.2",
+		"mapbox-gl": "^2.5.1"
 	}
 }

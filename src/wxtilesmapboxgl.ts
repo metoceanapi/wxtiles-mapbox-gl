@@ -57,12 +57,13 @@ export class WxTilesLayerManager {
 		this.cancel(); // in case it was busy with the rotten result :( This will remove unwanted layer
 
 		index = this._checkIndex(index);
-		// if (this.layer && index === this.currentIndex) return Promise.resolve(this.currentIndex); // wait first then check index!!!
+		if (this.layer && index === this.currentIndex) return Promise.resolve(this.currentIndex); // wait first then check index!!!
+		this.currentIndex = index;
 
 		this.layerId = this.props.id; // + index;
 		const URI = this.props.wxprops.URITime.replace('{time}', this.props.wxprops.meta.times[index]);
 
-		const props = {
+		const props: any = {
 			type: WxTilesLayer as any, // is complains on 'wxprops' // TODO: check
 			...this.props,
 			//id: this.layerId,
@@ -70,16 +71,32 @@ export class WxTilesLayerManager {
 			// onViewportLoad: resolve,
 		};
 
-		const layers = this.map.getStyle().layers;
+		// const layers = this.map.getStyle().layers;
 
 		if (!this.layer) {
 			this.layer = new MapboxLayer(props);
 			this.map.addLayer(this.layer, this.beforeLayerId);
 		} else {
+			// props.visible = false;
+			// props.onViewportLoad = () => {
+			// 	props.visible = true; //this.props.visible;
+			// 	// props.onViewportLoad = this.props.onViewportLoad;
+			// 	// props.updateTriggers = {
+			// 	// 	visible: true,
+			// 	// 	// onViewportLoad: this.props.onViewportLoad,
+			// 	// };
+			// 	props.updateTriggers = {
+			// 		data: URI,
+			// 	};
+			// 	this.layer?.setProps(props);
+			// };
+			// props.updateTriggers = {};
 			this.layer.setProps(props);
 		}
 
-		const layers1 = this.map.getStyle().layers;
+		return Promise.resolve(index);
+
+		// const layers1 = this.map.getStyle().layers;
 
 		// const promise = new Promise<number>((resolve): void => {
 		// 	WXLOG('promise:', index, 'started');
@@ -113,7 +130,7 @@ export class WxTilesLayerManager {
 
 		// WXLOG('newLayerByTimeIndexPromise:', index, 'finished');
 
-		return Promise.resolve(index);
+		// return Promise.resolve(index);
 	}
 
 	protected _checkIndex(index: number): number {
