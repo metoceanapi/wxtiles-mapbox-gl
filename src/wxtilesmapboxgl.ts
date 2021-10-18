@@ -2,21 +2,23 @@ import { MapboxLayer } from '@deck.gl/mapbox';
 import { Map } from 'mapbox-gl';
 
 import { WxTilesLayerProps, WxTilesLayer, WXLOG } from '@metoceanapi/wxtiles-deckgl';
+import { MapboxLayerProps } from '@deck.gl/mapbox/mapbox-layer';
 
 export class WxTilesLayerManager {
+	props: WxTilesLayerProps;
 	currentIndex: number = 0;
-	layer?: MapboxLayer;
-	layerId: string = '';
+	layer?: MapboxLayer<string>;
 	beforeLayerId?: string = undefined;
 
-	protected props: WxTilesLayerProps;
-	protected map: Map;
-	protected cancelNewLayerPromise?: () => void;
+	private URIs: string[];
+	private map: Map;
+	private cancelNewLayerPromise?: () => void;
 
 	constructor({ map, props, beforeLayerId }: { map: Map; props: WxTilesLayerProps; beforeLayerId: string }) {
 		this.map = map;
 		this.props = props;
 		this.beforeLayerId = beforeLayerId;
+		this.URIs = props.wxprops.meta.times.map((time) => props.wxprops.URITime.replace('{time}', time));
 	}
 
 	nextTimestep(): Promise<number> {
@@ -29,7 +31,12 @@ export class WxTilesLayerManager {
 		return this.goToTimestep(this.currentIndex - 1);
 	}
 
-	cancel() {
+	renderCurrentTimestep(): Promise<number> {
+		WXLOG('renderCurrentTimestep');
+		return this.goToTimestep(this.currentIndex);
+	}
+
+	cancel(): void {
 		// should be async? - ибо нахер!
 		if (this.cancelNewLayerPromise) {
 			WXLOG('cancel');
@@ -38,15 +45,10 @@ export class WxTilesLayerManager {
 	}
 
 	remove(): void {
-		WXLOG('remove');
+		WXLOG('remove:', this.layer?.id);
 		this.cancel();
-		this.layer && this.map.removeLayer(this.layerId);
+		if (this.layer) this.map.removeLayer(this.layer.id);
 		this.layer = undefined;
-	}
-
-	renderCurrentTimestep(): Promise<number> {
-		WXLOG('renderCurrentTimestep');
-		return this.goToTimestep(this.currentIndex);
 	}
 
 	goToTimestep(index: number): Promise<number> {
@@ -55,82 +57,65 @@ export class WxTilesLayerManager {
 
 		index = this._checkIndex(index);
 		if (this.layer && index === this.currentIndex) return Promise.resolve(this.currentIndex); // wait first then check index!!!
-		this.currentIndex = index;
-
-		this.layerId = this.props.id; // + index;
-		const URI = this.props.wxprops.URITime.replace('{time}', this.props.wxprops.meta.times[index]);
 
 		const props: any = {
-			type: WxTilesLayer as any, // is complains on 'wxprops' // TODO: check
 			...this.props,
-			//id: this.layerId,
-			data: URI,
-			// onViewportLoad: resolve,
+			id: this.props.id + index,
+			type: WxTilesLayer,
+			data: this.URIs[index],
 		};
-
-		// const layers = this.map.getStyle().layers;
 
 		if (!this.layer) {
 			this.layer = new MapboxLayer(props);
 			this.map.addLayer(this.layer, this.beforeLayerId);
-		} else {
-			// props.visible = false;
-			// props.onViewportLoad = () => {
-			// 	props.visible = true; //this.props.visible;
-			// 	// props.onViewportLoad = this.props.onViewportLoad;
-			// 	// props.updateTriggers = {
-			// 	// 	visible: true,
-			// 	// 	// onViewportLoad: this.props.onViewportLoad,
-			// 	// };
-			// 	props.updateTriggers = {
-			// 		data: URI,
-			// 	};
-			// 	this.layer?.setProps(props);
-			// };
-			// props.updateTriggers = {};
-			this.layer.setProps(props);
+			this.currentIndex = index;
+			WXLOG('created:', index);
+			return Promise.resolve(index);
 		}
-
-		return Promise.resolve(index);
-
-		// const layers1 = this.map.getStyle().layers;
-
-		// const promise = new Promise<number>((resolve): void => {
-		// 	WXLOG('promise:', index, 'started');
-		// 	const newInvisibleLayer = new WxTilesLayer({
-		// 		...this.props,
-		// 		id: layerId,
-		// 		data: URI,
-
-		// 		visible: false,
-
-		// 		onViewportLoad: (): void => {
-		// 			WXLOG('promise:onViewportLoad:', index);
-		// 			// const newVisibleLayer = new WxTilesLayer({ ...this.props, id: layerId, data: URI });
-		// 			// this._setFilteredLayers({ remove: newInvisibleLayer, replace: this.layer, add: newVisibleLayer });
-		// 			// this.layer = newVisibleLayer;
-		// 			this.currentIndex = index;
-		// 			this.cancelNewLayerPromise = undefined;
-		// 			resolve(this.currentIndex);
-		// 		},
-		// 	});
-
-		// 	this.cancelNewLayerPromise = () => {
-		// 		WXLOG('promise:cancelNewLayerPromise:', index);
-		// 		this.cancelNewLayerPromise = undefined;
-		// 		resolve(this.currentIndex);
-		// 	};
-
-		// 	// this._setFilteredLayers({ add: newInvisibleLayer });
-		// 	WXLOG('promise:', index, 'finished');
-		// });
-
-		// WXLOG('newLayerByTimeIndexPromise:', index, 'finished');
-
+		// else {
+		// 	this.layer.setProps(props);
+		// }
+		// this.currentIndex = index;
 		// return Promise.resolve(index);
+
+		const promise = new Promise<number>((resolve): void => {
+			WXLOG('promise:', index, 'started');
+			const newInvisibleLayer = new MapboxLayer<string>({
+				...props,
+				visible: false,
+				onViewportLoad: (): void => {
+					setTimeout(() => {
+						WXLOG('promise:onViewportLoad:', index);
+						this.cancelNewLayerPromise = undefined;
+						newInvisibleLayer.setProps({ visible: true, onViewportLoad: this.props.onViewportLoad });
+						this.layer!.setProps({ visible: false });
+						const oldLayerId = this.layer!.id;
+						setTimeout(() => this.map.removeLayer(oldLayerId), 100);
+						this.layer = newInvisibleLayer;
+						this.currentIndex = index;
+						resolve(index);
+					});
+				},
+			});
+
+			this.map.addLayer(newInvisibleLayer, this.beforeLayerId);
+
+			this.cancelNewLayerPromise = () => {
+				WXLOG('promise:cancelNewLayerPromise:', index);
+				this.map.removeLayer(newInvisibleLayer.id);
+				this.cancelNewLayerPromise = undefined;
+				resolve(this.currentIndex);
+			};
+
+			WXLOG('promise:', index, 'finished');
+		});
+
+		WXLOG('newLayerByTimeIndexPromise:', index, 'finished');
+
+		return promise;
 	}
 
-	protected _checkIndex(index: number): number {
+	private _checkIndex(index: number): number {
 		return (index + this.props.wxprops.meta.times.length) % this.props.wxprops.meta.times.length;
 	}
 }

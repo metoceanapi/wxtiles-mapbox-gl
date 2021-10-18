@@ -35,6 +35,7 @@
 		"typescript": "^4.4.3"
 	},
 	"dependencies": {
+		"@danmarshall/deckgl-typings": "^4.9.7",
 		"@deck.gl/mapbox": "^8.6.0",
 		"@metoceanapi/wxtiles-deckgl": "^2.0.5",
 		"@types/mapbox-gl": "^2.4.2",
