@@ -9,6 +9,10 @@ Write your changes below this section. `npm version [major|minor|patch]` will au
 
 ## [Unreleased]
 
+### Fixed
+
+- type export fix
+
 ## [0.0.1] - 2021-10-18
 
 ### Fixed
