@@ -62,6 +62,7 @@ export class WxTilesLayerManager {
 			...this.props,
 			id: this.props.id + index,
 			type: WxTilesLayer,
+			renderingMode: '2d',
 			data: this.URIs[index],
 		};
 
