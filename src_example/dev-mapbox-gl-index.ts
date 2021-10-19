@@ -126,10 +126,10 @@ async function addWxTilesLayer(map: mapboxgl.Map) {
 	// or
 	// const layerManager = new WxTilesLayerManager({ map, props: wxProps,beforeLayerId });
 
-	const params2: WxServerVarsStyleType = ['ecwmf.global', ['wind.speed.eastward.at-10m', 'wind.speed.northward.at-10m'], 'Wind Speed2'];
-	const wxProps2 = await createWxTilesLayerProps({ server: 'https://tiles.metoceanapi.com/data/', params: params2, extraParams });
-	const layerManager2 = createMapboxLayer(map, wxProps2);
-	await layerManager2.renderCurrentTimestep();
+	// const params2: WxServerVarsStyleType = ['ecwmf.global', ['wind.speed.eastward.at-10m', 'wind.speed.northward.at-10m'], 'Wind Speed2'];
+	// const wxProps2 = await createWxTilesLayerProps({ server: 'https://tiles.metoceanapi.com/data/', params: params2, extraParams });
+	// const layerManager2 = createMapboxLayer(map, wxProps2);
+	// await layerManager2.renderCurrentTimestep();
 
 	await layerManager.renderCurrentTimestep();
 

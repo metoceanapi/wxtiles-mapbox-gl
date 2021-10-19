@@ -1,24 +1,35 @@
 import { MapboxLayer } from '@deck.gl/mapbox';
 import { Map } from 'mapbox-gl';
 
-import { WxTilesLayerProps, WxTilesLayer, WXLOG } from '@metoceanapi/wxtiles-deckgl';
-import { MapboxLayerProps } from '@deck.gl/mapbox/mapbox-layer';
+import { WxTilesLayerProps, WxTilesLayer, WXLOG, createDeckGlLayer, WxTilesLayerManager as WxTilesLayerManagerDeck } from '@metoceanapi/wxtiles-deckgl';
+import { Deck } from '@deck.gl/core';
+import { TextLayer } from '@deck.gl/layers';
+import { Layer } from '@deck.gl/core';
+
+let deck: Deck;
+let dummylayer: MapboxLayer<string>;
 
 export class WxTilesLayerManager {
 	props: WxTilesLayerProps;
-	currentIndex: number = 0;
 	layer?: MapboxLayer<string>;
+	currentIndex: number = 0;
 	beforeLayerId?: string = undefined;
+	manager: WxTilesLayerManagerDeck;
 
-	private URIs: string[];
 	private map: Map;
-	private cancelNewLayerPromise?: () => void;
 
 	constructor({ map, props, beforeLayerId }: { map: Map; props: WxTilesLayerProps; beforeLayerId: string }) {
 		this.map = map;
 		this.props = props;
 		this.beforeLayerId = beforeLayerId;
-		this.URIs = props.wxprops.meta.times.map((time) => props.wxprops.URITime.replace('{time}', time));
+
+		if (!deck) {
+			dummylayer = new MapboxLayer({ id: 'brmrr', type: TextLayer, data: [] as string[] });
+			map.addLayer(dummylayer);
+			deck = dummylayer.deck;
+			deck.props.userData.isExternal = true; // HACk!
+		}
+		this.manager = createDeckGlLayer(deck, props);
 	}
 
 	nextTimestep(): Promise<number> {
@@ -37,87 +48,36 @@ export class WxTilesLayerManager {
 	}
 
 	cancel(): void {
-		// should be async? - ибо нахер!
-		if (this.cancelNewLayerPromise) {
-			WXLOG('cancel');
-			this.cancelNewLayerPromise();
-		}
+		this.manager.cancel();
 	}
 
 	remove(): void {
-		WXLOG('remove:', this.layer?.id);
-		this.cancel();
-		if (this.layer) this.map.removeLayer(this.layer.id);
+		this.manager.remove();
+		this.map.removeLayer(this.props.id);
 		this.layer = undefined;
 	}
 
 	goToTimestep(index: number): Promise<number> {
-		WXLOG('goToTimestep:', index);
-		this.cancel(); // in case it was busy with the rotten result :( This will remove unwanted layer
+		const prom = this.manager.goToTimestep(index);
+		prom.then((index: number) => {
+			// if (this.currentIndex === index) return;
+			if (!this.layer) {
+				this.layer = new MapboxLayer({ id: this.props.id, deck });
+				this.map.addLayer(this.layer, this.beforeLayerId);
+			}
 
-		index = this._checkIndex(index);
-		if (this.layer && index === this.currentIndex) return Promise.resolve(this.currentIndex); // wait first then check index!!!
+			this.layer.id = this.manager.layer!.props.id;
 
-		const props: any = {
-			...this.props,
-			id: this.props.id + index,
-			type: WxTilesLayer,
-			renderingMode: '2d',
-			data: this.URIs[index],
-		};
-
-		if (!this.layer) {
-			this.layer = new MapboxLayer(props);
-			this.map.addLayer(this.layer, this.beforeLayerId);
 			this.currentIndex = index;
-			WXLOG('created:', index);
-			return Promise.resolve(index);
-		}
-		// else {
-		// 	this.layer.setProps(props);
-		// }
-		// this.currentIndex = index;
-		// return Promise.resolve(index);
-
-		const promise = new Promise<number>((resolve): void => {
-			WXLOG('promise:', index, 'started');
-			const newInvisibleLayer = new MapboxLayer<string>({
-				...props,
-				visible: false,
-				onViewportLoad: (): void => {
-					setTimeout(() => {
-						WXLOG('promise:onViewportLoad:', index);
-						this.cancelNewLayerPromise = undefined;
-						newInvisibleLayer.setProps({ visible: true, onViewportLoad: this.props.onViewportLoad });
-						this.layer!.setProps({ visible: false });
-						const oldLayerId = this.layer!.id;
-						setTimeout(() => this.map.removeLayer(oldLayerId), 100);
-						this.layer = newInvisibleLayer;
-						this.currentIndex = index;
-						resolve(index);
-					});
-				},
-			});
-
-			this.map.addLayer(newInvisibleLayer, this.beforeLayerId);
-
-			this.cancelNewLayerPromise = () => {
-				WXLOG('promise:cancelNewLayerPromise:', index);
-				this.map.removeLayer(newInvisibleLayer.id);
-				this.cancelNewLayerPromise = undefined;
-				resolve(this.currentIndex);
-			};
-
-			WXLOG('promise:', index, 'finished');
+			// const oldId = this.layer?.id;
+			// const id = this.manager.layer!.props.id;
+			// this.layer = new MapboxLayer({ id, deck });
+			// this.map.addLayer(this.layer, this.beforeLayerId);
+			// // // this.map.addLayer(new MapboxLayer({ id: 'my-scatterplot', deck }));
+			// setTimeout(() => oldId && this.map.removeLayer(oldId), 100);
 		});
 
-		WXLOG('newLayerByTimeIndexPromise:', index, 'finished');
-
-		return promise;
-	}
-
-	private _checkIndex(index: number): number {
-		return (index + this.props.wxprops.meta.times.length) % this.props.wxprops.meta.times.length;
+		return prom;
 	}
 }
 

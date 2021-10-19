@@ -13,7 +13,8 @@
 		"start": "node watch-public.js",
 		"preversion": "npm run build",
 		"version": "changelogkeeper && git add CHANGELOG.md",
-		"npm_reinstall": "rm -rf node_modules package-lock.json"
+		"npm_reinstall": "rm -rf node_modules package-lock.json && npm i",
+		"npm_i": "npm i"
 	},
 	"repository": {
 		"type": "git",
