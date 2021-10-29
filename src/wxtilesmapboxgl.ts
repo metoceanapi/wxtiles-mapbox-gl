@@ -4,10 +4,12 @@ import { Map } from 'mapbox-gl';
 import { WxTilesLayerProps, WxTilesLayer, WXLOG } from '@metoceanapi/wxtiles-deckgl';
 import { MapboxLayerProps } from '@deck.gl/mapbox/mapbox-layer';
 
+// TODO: Idea of two-layers (like double buffer rendering)
 export class WxTilesLayerManager {
 	props: WxTilesLayerProps;
 	currentIndex: number = 0;
 	layer?: MapboxLayer<string>;
+	// futureLayer?: MapboxLayer<string>;
 	beforeLayerId?: string = undefined;
 
 	private URIs: string[];
@@ -72,12 +74,11 @@ export class WxTilesLayerManager {
 			this.currentIndex = index;
 			WXLOG('created:', index);
 			return Promise.resolve(index);
-		}
-		// else {
-		// 	this.layer.setProps(props);
-		// }
-		// this.currentIndex = index;
-		// return Promise.resolve(index);
+		} /* else {
+			this.layer.setProps(props);
+			this.currentIndex = index;
+			return Promise.resolve(index);
+		}*/
 
 		const promise = new Promise<number>((resolve): void => {
 			WXLOG('promise:', index, 'started');
@@ -129,5 +130,5 @@ export function createMapboxLayer(
 	return new WxTilesLayerManager({ map, props, beforeLayerId });
 }
 
-export { WXLOG, setupWxTilesLib, setWxTilesLogging, createWxTilesLayerProps } from '@metoceanapi/wxtiles-deckgl';
-export type { WxTilesLayer, WxTilesLayerProps, LibSetupObject, CreateProps, WxServerVarsStyleType } from '@metoceanapi/wxtiles-deckgl';
+export { WXLOG, createLegend, WxGetColorStyles, setupWxTilesLib, setWxTilesLogging, createWxTilesLayerProps } from '@metoceanapi/wxtiles-deckgl';
+export type { Legend, WxTilesLayer, WxTilesLayerProps, LibSetupObject, CreateProps, WxServerVarsStyleType } from '@metoceanapi/wxtiles-deckgl';

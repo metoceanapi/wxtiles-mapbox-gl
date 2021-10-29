@@ -31,14 +31,14 @@
 	"homepage": "https://github.com/metoceanapi/wxtiles-mapbox-gl#readme",
 	"devDependencies": {
 		"changelogkeeper": "^1.2.0",
-		"esbuild": "^0.12.28",
+		"esbuild": "^0.12.29",
 		"express": "^4.17.1",
 		"typescript": "^4.4.3"
 	},
 	"dependencies": {
 		"@danmarshall/deckgl-typings": "^4.9.7",
 		"@deck.gl/mapbox": "^8.6.0",
-		"@metoceanapi/wxtiles-deckgl": "^2.0.5",
+		"@metoceanapi/wxtiles-deckgl": "^2.0.7",
 		"@types/mapbox-gl": "^2.4.2",
 		"mapbox-gl": "^2.5.1"
 	}
