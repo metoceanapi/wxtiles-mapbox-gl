@@ -62,4 +62,3 @@ typings/
 # Dist file
 /dist
 public/wxtiles
-package-lock.json
