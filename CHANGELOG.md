@@ -9,6 +9,8 @@ Write your changes below this section. `npm version [major|minor|patch]` will au
 
 ## [Unreleased]
 
+## [0.0.5] - 2021-11-28
+
 ### Fixed
 
 - Mapbox is a peer dependency.
