@@ -2,7 +2,6 @@ import { MapboxLayer } from '@deck.gl/mapbox';
 import { Map } from 'mapbox-gl';
 
 import { WxTilesLayerProps, WxTilesLayer, WXLOG } from '@metoceanapi/wxtiles-deckgl';
-import { MapboxLayerProps } from '@deck.gl/mapbox/mapbox-layer';
 
 // TODO: Idea of two-layers (like double buffer rendering)
 export class WxTilesLayerManager {

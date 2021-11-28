@@ -9,6 +9,11 @@ Write your changes below this section. `npm version [major|minor|patch]` will au
 
 ## [Unreleased]
 
+### Fixed
+
+- Install the latest `@metoceanapi/wxtiles-deckgl`
+- Provide typings for deckgl
+
 ## [0.0.5] - 2021-11-28
 
 ### Fixed
