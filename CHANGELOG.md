@@ -9,6 +9,13 @@ Write your changes below this section. `npm version [major|minor|patch]` will au
 
 ## [Unreleased]
 
+### Fixed
+
+- Mapbox is a peer dependency.
+- @types/mapbox lives in devDependencies
+- keep package-lock.json
+
+
 ## [0.0.4] - 2021-10-29
 
 ### Added
