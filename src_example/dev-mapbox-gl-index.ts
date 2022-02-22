@@ -111,7 +111,7 @@ async function addWxTilesLayer(map: mapboxgl.Map) {
 
 	const params: WxServerVarsStyleType =
 		// ['ecwmf.global', ['wind.speed.eastward.at-10m', 'wind.speed.northward.at-10m'], 'Wind Speed2'];
-		['ecwmf.global', 'air.temperature.at-2m', 'Sea Surface Temperature'];
+		['moana3D', ['u', 'v'], 'direction'];
 	// ['obs-radar.rain.nzl.national', 'reflectivity', 'rain.EWIS'];
 	const extraParams = {
 		// DeckGl layer's common parameters or hooks
@@ -122,7 +122,7 @@ async function addWxTilesLayer(map: mapboxgl.Map) {
 		},
 	};
 
-	const wxProps = await createWxTilesLayerProps({ server: 'https://tiles.metoceanapi.com/data/', params, extraParams });
+	const wxProps = await createWxTilesLayerProps({ server: 'http://localhost:3004/', params, extraParams });
 
 	const layerManager = createMapboxLayer(map, wxProps);
 	// or
