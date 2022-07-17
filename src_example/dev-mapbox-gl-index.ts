@@ -19,7 +19,7 @@ import colorStyles from './styles/styles.json';
 import units from './styles/uconv.json';
 import colorSchemes from './styles/colorschemes.json';
 
-mapboxgl.accessToken = 'pk.eyJ1IjoibWV0b2NlYW4iLCJhIjoia1hXZjVfSSJ9.rQPq6XLE0VhVPtcD9Cfw6A';
+mapboxgl.accessToken = '';
 
 (async () => {
 	const map = new mapboxgl.Map({
